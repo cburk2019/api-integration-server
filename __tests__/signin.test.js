@@ -4,23 +4,20 @@ require('dotenv');
 const SECRET = process.env.SECRET;
 const supertest = require('supertest');
 const server = require('../lib/server.js');
-const { db } = require('../lib/model/index.js');
+const { db } = require('../lib/model/index');
 const base64 = require('base-64');
 const { expect } = require('@jest/globals');
 
-const authRequest = supertest(server);
+const authRequest = supertest(server.app);
 
-// beforeAll(async (done) => {
-//   await db.sync();
-//   done();
-// });
-// afterAll(async (done) => {
-//   await db.drop();
-//   done();
-// });
+beforeAll(async () => {
+  await db.sync();
+});
+afterAll(async () => {
+  await db.drop();
+});
 
 describe('Testing Auth Routes', () => {
-  
   it('Should create a new user on POST /signup', async () => {
     let response = await authRequest.post('/signup').send({
       username: 'Joe',
@@ -39,5 +36,4 @@ describe('Testing Auth Routes', () => {
 
     expect(response.status).toBe(200);
   });
-
 });
