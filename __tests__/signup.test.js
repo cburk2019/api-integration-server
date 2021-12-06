@@ -10,12 +10,13 @@ beforeAll( (done) => {
 });
 afterAll((done) => {
   db.close();
+  done();
 });
 
 
 describe('Testing Signup route', () => {
 
-  it('can create a user on /signup', async (done) => {
+  it('can create a user on /signup', async () => {
 
     let user = { username: 'testuser', password: 'string'};
 
@@ -25,7 +26,6 @@ describe('Testing Signup route', () => {
     expect(response.status).toBe(201);
     expect(userObject.user.id).toBeDefined();
     expect(userObject.user.username).toEqual(user.username);
-    // done();
 
   });
 
