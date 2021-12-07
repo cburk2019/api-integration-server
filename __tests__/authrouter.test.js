@@ -2,20 +2,21 @@
 
 process.env.SECRET = 'secret123';
 
-const app = require('./lib/server.js')
+const app = require('../lib/server');
+const supertest = require('supertest');
 const server = supertest(app.server);
 const jwt = require('jsonwebtoken');
 
-const { db } = require('../lib/models')
+const { db } = require('../lib/model');
 
-beforeAll(async (done) => {
+beforeAll(async () => {
   await db.sync();
-  done();
+  // done();
 });
 
-afterAll(async (done) => {
+afterAll(async () => {
   await db.drop();
-  done();
+  // done();
 });
 
 let users = {
@@ -31,7 +32,7 @@ describe('Auth Router', () => {
 
     const body = {};
 
-    const res = await server.post('/api')
+    const res = await server.post('/')
       .set('Authorization', 'Bearer ' + token).send(body)
 
     expect(res.statusCode).toBe(201);
@@ -40,7 +41,7 @@ describe('Auth Router', () => {
     const token2 = jwt.sign(users['user'], process.env.SECRET);
     await server.post('/signup').send(users['user']);
 
-    const res2 = await server.post('/api/v2/food')
+    const res2 = await server.post('/')
       .set('Authorization', 'Bearer ' + token2).send(body)
 
     expect(res2.statusCode).toBe(500);
@@ -53,7 +54,7 @@ describe('Auth Router', () => {
 
     const token = jwt.sign(users['user'], process.env.SECRET);
 
-    const res = await server.get('/api').set('Authorization', 'Bearer ' + token);
+    const res = await server.get('/signup').set('Authorization', 'Bearer ' + token);
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toBe(body);
@@ -61,4 +62,4 @@ describe('Auth Router', () => {
     done();
   });
 
-})
+});
